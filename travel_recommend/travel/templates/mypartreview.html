@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src = "https://code.jquery.com/jquery-latest.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+<style>
+div#header{
+    background-color : #FFECC4;
+    position : fixed;
+    width : 100%;
+    top : 0;
+    left: 0;
+    height : 8rem;
+	text-align: center;
+	
+}
+div#content{
+	position : fixed;
+	top: 9rem; 
+	left: 4rem;
+	right: 4rem;
+	margin-left : auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+div#container{ 
+	margin-top : 10px;
+	position: fixed;
+	top: 13rem; 
+	left: 4rem;
+	right: 4rem;
+	margin-left : auto;
+	margin-right: auto;
+	text-align: center;
+	bottom: 0; 
+	overflow: auto; 
+	height: 70vh;
+	display:flex;
+	justify-content: space-between;
+}
+
+div.item{
+	height: 100%;
+	
+}
+div#container{
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+div#container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
+}
+div.item.item1{
+	position:fixed;
+	left: 4rem;
+	right: 1rem;
+	text-align:center;
+	width: 120px;
+	background-color: white;
+}
+
+div.item.item2{
+	margin-left : auto;
+	margin-right: auto;
+	text-align:center;
+}
+
+div.baritem{
+	border-bottom: 1px solid black;
+	margin-top:5px;
+	margin-bottom:5px;
+}
+
+div.baritem:hover{
+	background-color: #fff5c8;
+}
+
+div.baritem.bitem1{
+	background-color: #FFECC4;
+}
+
+#myreview{
+	width:1000px; 
+	margin-left:10rem; 
+	margin-right:auto;
+}
+
+#myreview th{
+	background-color: #FFECC4;
+}
+
+#myreview td{
+	margin-top:1rem;
+}
+
+.td-style{
+	height: 70px;
+}
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+	//alert('a');
+	
+	$("[class^=updatebtn]").click(function(){
+		var cl = $(this).attr("class");
+		var n = cl.replace("updatebtn","");
+		//alert(n);
+		var r = "#rating" + n
+		var read = $(r).attr("readonly")
+		//alert(read);
+		if(read == "readonly"){
+			$(r).removeAttr("readonly");
+		}
+		else{
+			var rate = $(r).val()
+			$.ajax({
+				url:'updaterating',
+				type:'get',
+				data:{'rate':rate, 'rid':n},
+				dataType:'json',
+				success:function(data){
+					//alert(data);
+					$(r).attr("readonly",true);					
+				},
+				error:function(){
+					alert("error");
+				}
+			});
+		}
+	});
+	$("[class^=deletebtn]").click(function(){
+		var cl = $(this).attr("class");
+		var n = cl.replace("deletebtn","");
+		//location.href="deletereview?rid="+n
+		var r = "#tr" + n		
+		$.ajax({
+			url:'deletereview',
+			type:'get',
+			data:{'rid':n},
+			dataType:'json',
+			success:function(data){
+				//alert(data);
+				location.reload()				
+			},
+			error:function(){
+				alert("error");
+			}
+		});
+	});
+});
+
+function insertReview(){
+	//alert('a');
+	$("#addreview").empty();
+	$("#addreview").append("<td class='td-style'><input type='text' id = 'rname' placeholder='띄어쓰기하지마세요'></td><td><select name = 'area' id = 'rarea'><option value=''>다음단계에서 입력가능</option></select></td><td><input type='number' id = 'rrate' style = 'width:50px;'></td><td><button type='button' onclick = 'addrvBtn()'>등록</button></td>")
+}
+
+function addrvBtn(){
+	//alert('a');
+	var rname = $("#rname").val();	
+	var rrate = $("#rrate").val();
+	$.ajax({
+		url:'searchname',
+		type:'get',
+		data:{'rname':rname},
+		dataType:'json',
+		success:function(data){
+			//alert(data);
+			if (data == "실패"){
+				alert("등록되지 않은 여행지입니다. 다시 입력해주세요");
+			}else{
+				$("#addreview").empty();
+				var str = "";
+				var sstr = "";
+				var estr = "";
+				$.each(data, function(ind, entry){
+					if(entry['keys'] == "noption"){
+						//$("#addreview").append('ㅁ');
+						sstr = "<td class='td-style'><select name ='rname' id = 'rname'>";
+						estr = "</select></td><td><select name = 'area' id = 'rarea'><option value=''>다음단계에서 입력가능</option></select></td><td><input type='number' id = 'rrate' style = 'width:50px;' value = '" + rrate + "' readonly></td><td><button type='button' onclick = 'addrvBtn()'>등록</button></td>"
+						str += "<option value = '" + entry['irum'] + "'" + ">" + entry['irum'] + "</option>";
+					}
+					else{
+						sstr = "<td class='td-style'><input type='text' id = 'rname'  value='" + rname +"' readonly></td><td><select name = 'area' id = 'rarea'>";
+						estr = "</select></td><td><input type='number' id = 'rrate' style = 'width:50px;' value='" + rrate + "' readonly></td><td><button type='button' onclick = 'rvfinishBtn()'>완료</button><br><button type='button' onclick = 'insertReview()'>재입력</button></td>"					
+						str += "<option value='" + entry['rarea'] + "'>" + entry['rarea'] + "</option>";
+					}
+				});	
+				$("#addreview").append(sstr + str + estr);
+			}
+		},
+		error:function(){
+			alert("error");
+		}
+	});
+}
+
+function rvfinishBtn(){
+	if($("#rname").val() == "" || $("#rarea").val() == "" || $("#rrate").val() == ""){
+		alert("모든 정보를 입력해주세요");
+	}else{
+		var rname = $("#rname").val();
+		var rarea = $("#rarea").val();
+		var rrate = $("#rrate").val();
+		$.ajax({
+			url:'insertreview',
+			type:'get',
+			data:{'rname':rname, 'rarea':rarea, 'rrate':rrate},
+			dataType:'json',
+			success:function(data){
+				alert(data);
+				location.reload();
+			},
+			error:function(){
+				alert("error");
+			}
+		});
+	}
+}
+
+function getURL(){
+    var url = window.document.URL;
+    alert(url);
+}
+</script>
+</head>
+<body>
+<div id="header">
+	<div align="right">
+	<form action="logout">
+	<a href = "/">메인으로</a>
+	<a href = "main">맞춤여행지추천</a>
+	<a href = "info">지역별여행지추천</a>
+	<button type="submit" class="btn btn-primary btn-sm">로그아웃</button>
+	</form>
+	</div>
+	<h2 align = 'center' style="margin-top:10px;">마이페이지</h2>
+	<h5 style = "text-align: center; margin-left:auto; margin-right:auto;">아이디 : {{user.user_id}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 이름 : {{user.user_name}}</h5>
+</div>
+<div id = "content"><h3>리뷰관리</h3><hr></div>
+<div id = "container">
+	<div class = "item item1">
+		<div  class = "baritem bitem1"><b>마이페이지</b></div>
+		<div  class = "baritem bitem2"><a href = "javascript:insertReview()">리뷰등록</a></div>
+		<div  class = "baritem bitem3"><a href = "myinfo">회원정보관리</a></div>
+		<div  class = "baritem bitem4"><a href = "myqna">QnA</a></div>
+	</div>
+	<div class = "item item2">
+		{% if data %}
+		<table id = "myreview">
+			<tr>
+				<td colspan='4'>
+					<a href='mypage'>전체보기</a>&nbsp;
+					<a href='mypartreview?startword=ㄱ'>ㄱ</a>&nbsp;
+					<a href='mypartreview?startword=ㄴ'>ㄴ</a>&nbsp;
+					<a href='mypartreview?startword=ㄷ'>ㄷ</a>&nbsp;
+					<a href='mypartreview?startword=ㄹ'>ㄹ</a>&nbsp;
+					<a href='mypartreview?startword=ㅁ'>ㅁ</a>&nbsp;
+					<a href='mypartreview?startword=ㅂ'>ㅂ</a>&nbsp;
+					<a href='mypartreview?startword=ㅅ'>ㅅ</a>&nbsp;
+					<a href='mypartreview?startword=ㅇ'>ㅇ</a>&nbsp;
+					<a href='mypartreview?startword=ㅈ'>ㅈ</a>&nbsp;
+					<a href='mypartreview?startword=ㅊ'>ㅊ</a>&nbsp;
+					<a href='mypartreview?startword=ㅋ'>ㅋ</a>&nbsp;
+					<a href='mypartreview?startword=ㅌ'>ㅌ</a>&nbsp;
+					<a href='mypartreview?startword=ㅍ'>ㅍ</a>&nbsp;
+					<a href='mypartreview?startword=ㅎ'>ㅎ</a>&nbsp;
+					<a href='mypartreview?startword=ㄲ'>ㄲ</a>&nbsp;
+					<a href='mypartreview?startword=ㄸ'>ㄸ</a>&nbsp;
+					<a href='mypartreview?startword=ㅃ'>ㅃ</a>&nbsp;
+					<a href='mypartreview?startword=ㅆ'>ㅆ</a>&nbsp;
+					<a href='mypartreview?startword=ㅉ'>ㅉ</a>&nbsp;
+					<a href='mypartreview?startword=*'>etc</a>
+					<br><br>
+				</td>
+			</tr>
+			<tr>
+				<th>관광지명</th>
+				<th>지역</th>
+				<th>평점</th>
+				<th>수정/삭제</th>
+			</tr>
+			<tr id = 'addreview'></tr>
+		{% for d in data%}
+			<tr id = "tr{{d.tourid.tourid))">
+				<td class = "td-style"><a href='https://www.google.com/search?q={{d.tourid.tourname}}' target='_blank'>{{d.tourid.tourname}}</a>({{d.tourid.tourid}})</td>
+				<td>{{d.tourid.city}} {{d.tourid.town}}</td>
+				<td><input type='number' id = "rating{{d.tourid.tourid}}" value="{{d.rating}}" readonly style = "border:0; width:50px;"></td>
+				<td>
+					<button type = "button" class = "updatebtn{{d.tourid.tourid}}" value = "{{d.tourid.tourid}}">수정</button>
+					<br>
+					<button type = "button" class = "deletebtn{{d.tourid.tourid}}">삭제</button>
+				</td>
+			</tr>
+		{% endfor %}
+		<!--  페이지 링크 표시  -->		{# 얘도 주석 #}
+		{% if data.paginator.num_pages > 1 %}			{# paginator.num_pages : 전체 페이지 수 #}
+		<tr>
+			<td colspan="5" style="text-align: center;">
+				<div>
+					{% if data.has_previous %}		{# 이전 페이지가 존재하는지 #}
+						<a href = "mypartreview?startword={{w}}&page={{data.previous_page_number}}">&laquo;이전</a>			<!--   '&laquo'는 '<<'를 의미#} -->
+					{% endif %}
+					{% for p in allpage %}				{# 페이지번호 나열하는 방법 시도 #}
+						{% if p > 0 %}
+							{% if p == data.number %}		{# 현재 페이지는 링크에서 제외 #}
+								[{{p}}]
+							{% elif p != data.number %}
+								<a href = 'mypartreview?startword={{w}}&page={{p}}'>[{{p}}]</a>
+							{% endif %}						
+						{% endif %}
+					{% endfor %}
+					{% if data.has_next %}			{# 다음 페이지가 존재하는지 #}
+						<a href = "mypartreview?startword={{w}}&page={{data.next_page_number}}">다음&raquo;</a>			<!-- '&raquo'는 '>>'를 의미#} -->
+					{% endif %}
+					&nbsp;&nbsp;
+					(페이지 : {{data.number}} / {{data.paginator.num_pages}})
+				</div>
+			</td>
+		</tr>
+		{% endif %}
+		</table> 
+		{% else %}
+		<table id = "myreview">
+			<tr>
+				<td colspan='4'>
+					<a href='mypartreview?startword=ㄱ'>ㄱ</a>
+					<a href='mypartreview?startword=ㄴ'>ㄴ</a>
+					<a href='mypartreview?startword=ㄷ'>ㄷ</a>
+					<a href='mypartreview?startword=ㄹ'>ㄹ</a>
+					<a href='mypartreview?startword=ㅁ'>ㅁ</a>
+					<a href='mypartreview?startword=ㅂ'>ㅂ</a>
+					<a href='mypartreview?startword=ㅅ'>ㅅ</a>
+					<a href='mypartreview?startword=ㅇ'>ㅇ</a>
+					<a href='mypartreview?startword=ㅈ'>ㅈ</a>
+					<a href='mypartreview?startword=ㅊ'>ㅊ</a>
+					<a href='mypartreview?startword=ㅋ'>ㅋ</a>
+					<a href='mypartreview?startword=ㅌ'>ㅌ</a>
+					<a href='mypartreview?startword=ㅍ'>ㅍ</a>
+					<a href='mypartreview?startword=ㅎ'>ㅎ</a>
+					<a href='mypartreview?startword=ㄲ'>ㄲ</a>
+					<a href='mypartreview?startword=ㄸ'>ㄸ</a>
+					<a href='mypartreview?startword=ㅃ'>ㅃ</a>
+					<a href='mypartreview?startword=ㅆ'>ㅆ</a>
+					<a href='mypartreview?startword=ㅉ'>ㅉ</a>
+					<a href='mypartreview?startword=*'>*</a>
+				</td>
+			</tr>
+			<tr><td>
+				글이 없습니다.
+			</td></tr>
+		</table>
+		{% endif %}
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src = "https://code.jquery.com/jquery-latest.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+<style>
+div#header{
+    background-color : #FFECC4;
+    position : fixed;
+    width : 100%;
+    top : 0;
+    left: 0;
+    height : 8rem;
+	text-align: center;
+	
+}
+div#content{
+	position : fixed;
+	top: 9rem; 
+	left: 4rem;
+	right: 4rem;
+	margin-left : auto;
+	margin-right: auto;
+	text-align: center;
+}
+
+div#container{ 
+	margin-top : 10px;
+	position: fixed;
+	top: 13rem; 
+	left: 4rem;
+	right: 4rem;
+	margin-left : auto;
+	margin-right: auto;
+	text-align: center;
+	bottom: 0; 
+	overflow: auto; 
+	height: 70vh;
+	display:flex;
+	justify-content: space-between;
+}
+
+div.item{
+	height: 100%;
+	
+}
+div#container{
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}
+div#container::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
+}
+div.item.item1{
+	position:fixed;
+	left: 4rem;
+	right: 1rem;
+	text-align:center;
+	width: 120px;
+	background-color: white;
+}
+
+div.item.item2{
+	margin-left : auto;
+	margin-right: auto;
+	text-align:center;
+}
+
+div.baritem{
+	border-bottom: 1px solid black;
+	margin-top:5px;
+	margin-bottom:5px;
+}
+
+div.baritem:hover{
+	background-color: #fff5c8;
+}
+
+div.baritem.bitem1{
+	background-color: #FFECC4;
+}
+
+#myreview{
+	width:1000px; 
+	margin-left:10rem; 
+	margin-right:auto;
+}
+
+#myreview th{
+	background-color: #FFECC4;
+}
+
+#myreview td{
+	margin-top:1rem;
+}
+
+.td-style{
+	height: 70px;
+}
+</style>
+<script type="text/javascript">
+$(document).ready(function(){
+	//alert('a');
+	
+	$("[class^=updatebtn]").click(function(){
+		var cl = $(this).attr("class");
+		var n = cl.replace("updatebtn","");
+		//alert(n);
+		var r = "#rating" + n
+		var read = $(r).attr("readonly")
+		//alert(read);
+		if(read == "readonly"){
+			$(r).removeAttr("readonly");
+		}
+		else{
+			var rate = $(r).val()
+			$.ajax({
+				url:'updaterating',
+				type:'get',
+				data:{'rate':rate, 'rid':n},
+				dataType:'json',
+				success:function(data){
+					//alert(data);
+					$(r).attr("readonly",true);					
+				},
+				error:function(){
+					alert("error");
+				}
+			});
+		}
+	});
+	$("[class^=deletebtn]").click(function(){
+		var cl = $(this).attr("class");
+		var n = cl.replace("deletebtn","");
+		//location.href="deletereview?rid="+n
+		var r = "#tr" + n		
+		$.ajax({
+			url:'deletereview',
+			type:'get',
+			data:{'rid':n},
+			dataType:'json',
+			success:function(data){
+				//alert(data);
+				location.reload()				
+			},
+			error:function(){
+				alert("error");
+			}
+		});
+	});
+});
+</script>
+</head>
+<body>
+<div id="header">
+	<div align="right">
+	<form action="logout">
+	<a href = "/">메인으로</a>
+	<a href = "main">맞춤여행지추천</a>
+	<a href = "info">지역별여행지추천</a>
+	<button type="submit" class="btn btn-primary btn-sm">로그아웃</button>
+	</form>
+	</div>
+	<h2 align = 'center' style="margin-top:10px;">마이페이지</h2>
+	<h5 style = "text-align: center; margin-left:auto; margin-right:auto;">아이디 : {{user.user_id}} &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 이름 : {{user.user_name}}</h5>
+</div>
+<div id = "content"><h3>나의 QnA</h3><hr></div>
+<div id = "container">
+	<div class = "item item1">
+		<div  class = "baritem bitem1"><b>마이페이지</b></div>
+		<div  class = "baritem bitem2"><a href = "mypage">리뷰관리</a></div>
+		<div  class = "baritem bitem3"><a href = "myinfo">회원정보관리</a></div>
+		<div  class = "baritem bitem4"><a href = "myqna">QnA</a></div>
+	</div>
+	<div class="item item2">
+	 <br><br><br><br><br><br><h2><b>준비중입니다</b></h2>
+	</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<style>
+.wrapper {
+  --color: #1F242D;
+  --color-invert: #ffffff;
+  --clip-path: circle(15px at left);
+  --clip-path-hover: circle(70px at left);
+  --clip-path-clicked: circle(100vw at left);
+  --duration: 0.4s;
+  --timing-function: ease;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+.wrapper .video {
+  height: 15vh;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 15px;
+  clip-path: var(--clip-path);
+  transition: clip-path var(--duration) var(--timing-function);
+}
+.wrapper .video video {
+  position: fixed;
+  background: #c4cbde;
+  top: 50%;
+  left: 50%;
+  min-width: 100%;
+  min-height: 100%;
+  width: auto;
+  height: auto;
+  transform: translate(-50%, -50%);
+}
+.wrapper .text {
+  position: relative;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  opacity: var(--opacity, 1);
+  transition: opacity 0.3s var(--timing-function) 0.2s;
+}
+.wrapper .text::before, .wrapper .text::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: -1px;
+  right: 25px;
+  height: 0;
+}
+.wrapper .text::before {
+  box-shadow: 26px 0 0 1px var(--color);
+  right: var(--r, 100%);
+  opacity: var(--opacity, 0);
+  transition: right 0.5s ease-in, opacity 0.1s linear;
+}
+.wrapper .text::after {
+  box-shadow: 26px 0 0 1px var(--color-invert);
+  clip-path: var(--clip-path);
+  transition: clip-path var(--duration) var(--timing-function);
+}
+.wrapper .text > span::before, .wrapper .text > span::after {
+  content: attr(data-text);
+  padding-left: 26px;
+}
+.wrapper .text > span::before {
+  color: var(--color);
+}
+.wrapper .text > span::after {
+  color: var(--color-invert);
+  clip-path: var(--clip-path);
+  transition: clip-path var(--duration) var(--timing-function);
+  position: absolute;
+  left: 0;
+}
+.wrapper input {
+  width: 220px;
+  height: 40px;
+  margin: auto;
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-radius: 40px;
+  z-index: 2;
+  appearance: none;
+  cursor: pointer;
+}
+.wrapper input:focus {
+  outline: 0;
+}
+.wrapper input:hover ~ .video {
+  clip-path: var(--clip-path-hover);
+}
+.wrapper input:hover ~ .text::before {
+  --r: 25px;
+  --opacity: 1;
+}
+.wrapper input:hover ~ .text::after {
+  clip-path: var(--clip-path-hover);
+}
+.wrapper input:hover ~ .text > span::after {
+  clip-path: var(--clip-path-hover);
+}
+body {
+  background: #E8EBF3;
+  height: 100vh;
+  font: 400 16px 'Poppins', sans-serif;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+@import url("https://fonts.googleapis.com/css?family=Montserrat:600&display=swap");
+
+
+*,
+*:before,
+*:after {
+  box-sizing: border-box;
+}
+
+.multi-button {
+  margin-left: -0.5rem;
+  margin-right: -0.5rem;
+}
+.multi-button button {
+  background: white;
+  border: 0.125em solid black;
+  cursor: pointer;
+  font: 600 1rem/1.25 "Montserrat", sans-serif;
+  letter-spacing: 0.125em;
+  margin: 0.5rem;
+  padding: 0.5em 0.75em;
+  position: relative;
+  text-transform: uppercase;
+}
+.multi-button button:before, .multi-button button:after {
+  content: "";
+  position: absolute;
+  transition: all 0.125s ease-in-out;
+}
+.multi-button button.cut {
+  background: none;
+  border-color: transparent;
+}
+.multi-button button.cut:before, .multi-button button.cut:after {
+  transition: all 0.175s ease-in-out;
+}
+.multi-button button.cut:before {
+  background: black;
+  border: 0px dashed black;
+  left: -0.125em;
+  top: -0.125em;
+  right: -0.125em;
+  bottom: -0.125em;
+  z-index: -1;
+}
+.multi-button button.cut:hover:before, .multi-button button.cut:focus:before {
+  background: white;
+  border-width: 0.125em;
+}
+.multi-button button.cut:after {
+  background: white;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: -1;
+}
+.multi-button button.copy:after {
+  border: 0.125em dashed black;
+  bottom: -0.125em;
+  left: -0.125em;
+  right: -0.125em;
+  top: -0.125em;
+  z-index: -1;
+}
+.multi-button button.copy:hover:after, .multi-button button.copy:focus:after {
+  bottom: -0.375em;
+  left: 0.125em;
+  right: -0.375em;
+  top: 0.125em;
+}
+.multi-button button.paste:after {
+  border: 0.125em dashed black;
+  bottom: -0.125em;
+  left: -0.125em;
+  right: -0.125em;
+  top: -0.125em;
+}
+.multi-button button.paste:hover:after, .multi-button button.paste:focus:after {
+  bottom: 0.125em;
+  left: 0.125em;
+  right: 0.125em;
+  top: 0.125em;
+}
+
+
+</style>
+<script type="text/javascript">
+function mrecFunc() {
+  var checkBox = document.getElementById("mytriprecommend");
+  if (checkBox.checked == true){
+    location.href = "main"
+  }
+}
+
+function arecFunc() {
+  var checkBox = document.getElementById("arearecommend");
+  if (checkBox.checked == true){
+    location.href = "info"
+  }
+}
+</script>
+</head>
+<body>
+<div class="wrapper">
+  <input type="checkbox" id = "arearecommend" onclick = "arecFunc()">
+  <div class="video">
+    <video src="https://www.robmillsarchitects.com/files/land/city/RMA_Web_land_city_1.mp4" loop muted autoplay></video>
+  </div>
+  <div class="text">
+    <span data-text="지역별 여행지 추천"></span>
+  </div>
+</div><div class="wrapper">
+  <input type="checkbox" id = "mytriprecommend" onclick = "mrecFunc()">
+  <div class="video">
+    <video src="https://www.robmillsarchitects.com/files/land/city/RMA_Web_land_city_1.mp4" loop muted autoplay></video>
+  </div>
+  <div class="text">
+    <span data-text="맞춤 여행지 추천"></span>
+  </div>
+</div>
+<div class="multi-button">
+<br><br>
+  <button class="cut" onclick = "location.href='loginform'">Login</button>
+  <button class="copy" onclick = "location.href='signup'">Signup</button>
+  <button class="paste" onclick = "location.href='mypage'">Mypage</button>
+</div>
+
+</body>
+</html>
